@@ -235,7 +235,22 @@ G:\workplace\study-kit\HANDOFF.md
 
 ---
 
-## 12. 后续（插件化，另行开发）
+## 12. 插件 dsh-sprint（本仓库）
 
-本目录将来是插件仓库。目标：把 S0–S6 变成命令族（扫描资料 / 出大纲 / 生成教材 / 生成 A4 底稿 / 生成题目集 / 自检），复用本文件第 7 节的模板与第 8 节的验收清单。
-**开发以本文档为 spec：文档改，工具跟着改。**
+本目录同时是这个插件的仓库：`dsh-sprint`，把 S0–S6 里能自动化的部分变成一条工具。
+
+对话里只有一个工具，参数是 `action` + `payload_json`（和 StudyHub 同形）：
+
+| action | 替你干的活 |
+|---|---|
+| `project.init` / `project.status` | 建 `_work/` 与 `sprint.json`，记住科目、考试日、章节、每步产出 |
+| `config.set {outDir, deliverDir, python}` | **选输出目录**：中间件放哪、交付件出哪 |
+| `scan.pdf` / `scan.ppt` / `scan.shots` | 抽全文并按章切 / 抽 PPT 文字并导图 / 截图按时间排成 s01.png… |
+| `render.tex` | `xelatex -no-pdf` + `xdvipdfmx` 两步编译，读日志报 `^!` |
+| `render.preview` | 每页渲染 PNG，供人眼复核排版 |
+| `check.accept` | 交付自检：产物存在/非空/日志无错/页数达标 |
+| `template.install` | 复制第 7 节的模板 |
+
+命令行的 `/sprint init|status|template|check` 是同一套东西的快捷键；技能 `exam-sprint` 会把这份文档的流程讲给模型听。
+
+**规则**：内容（知识网络、逐项释义、解法归范）仍由模型写，插件只做管道与自检；**开发以本文档为 spec，文档改，工具跟着改**。
