@@ -1,0 +1,9 @@
+{
+  "tool.sprint": "考前速成整理：资料抽取、任务编排、模板渲染、验收自检",
+  "cmd.sprint": "查看或推进当前科目的速成整理任务",
+  "scan.pdf": "抽取 PDF 全文并按章切分",
+  "scan.ppt": "抽取 PPT 文字与内嵌图片",
+  "scan.shots": "把网课截图按时间排序编号",
+  "render.tex": "编译 LaTeX 并检查错误",
+  "check.accept": "交付前自检"
+}

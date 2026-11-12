@@ -1,0 +1,5 @@
+- insert:
+    - id: dsh-sprint
+      name: dsh-sprint
+      config:
+        python: python

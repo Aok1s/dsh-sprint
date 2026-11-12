@@ -1,0 +1,10 @@
+node_modules/
+_work/
+*.log
+*.aux
+*.xdv
+*.out
+*.toc
+tpl.png
+template.pdf
+_test*.mjs

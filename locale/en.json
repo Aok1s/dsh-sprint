@@ -1,0 +1,9 @@
+{
+  "tool.sprint": "Exam sprint pipeline: material extraction, task state, LaTeX rendering, acceptance checks",
+  "cmd.sprint": "Inspect or advance the current subject's sprint",
+  "scan.pdf": "Extract PDF text and split it by chapter",
+  "scan.ppt": "Extract PPT text and embedded images",
+  "scan.shots": "Sort lecture screenshots by capture time",
+  "render.tex": "Compile LaTeX and report errors",
+  "check.accept": "Pre-delivery acceptance checks"
+}

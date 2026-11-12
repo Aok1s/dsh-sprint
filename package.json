@@ -1,0 +1,50 @@
+{
+  "name": "dsh-sprint",
+  "version": "0.1.0",
+  "description": "考前速成整理流程的 DSH 插件：资料抽取、任务编排、模板渲染与验收自检",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "exam-prep",
+    "latex",
+    "study"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./template.tex": "./template.tex",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "locale",
+    "template.tex",
+    "README.md",
+    "HANDOFF.md",
+    "LICENSE",
+    "cordis.patch.yml"
+  ],
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "schemastery": "^3.18.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": ">=0.2.0-rc.2 <0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aok1s/dsh-sprint.git"
+  },
+  "author": "Aok1s"
+}
