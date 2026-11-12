@@ -45,7 +45,38 @@ sprint {"action":"check.accept","payload_json":"{\"tex\":\"_work/main.tex\",\"mi
 | `render.tex` | 两步编译并报错 | tex, name |
 | `render.preview` | 每页渲染 PNG | pdf, dpi |
 | `check.accept` | 交付自检 | tex 或 pdf, minPages |
+| `subject.create` | 建一个科目：books/questions/ppt/shots/_work/_out | name, exam |
+| `subject.list` | 有哪些科目、各有几份资料 | — |
+| `subject.remove` | 一键清理：`mode:work` 只清中间件，`mode:all` 整科删除（要 confirm） | name, mode, confirm |
+| `split.pdf` | 大 PDF 切单页 + 按 ranges 合并成章节 | path, ranges, mode |
+| `plan.coverage` / `plan.next` | 网课章节对照书章节，推荐下一节 | sections |
+| `draft.new` / list / update / patch | 每节草稿的状态机，交截图后打补丁 | title, status, action |
 | `template.install` | 复制排版模板 | name |
+
+## 多科目分区
+
+```text
+G:\workplace\
+├── 激光原理\                  ← 一个科目一个目录
+│   ├── books/ questions/ ppt/ shots/   原始资料
+│   ├── _work/                          中间件（扫描、切页、草稿、编译）
+│   └── _out/                           交付件
+├── 通信原理\
+└── subjects.json              ← 科目登记表（插件写，别手改）
+```
+
+建科目之后，动作带上 `subject` 就落到那一科里：`{"action":"plan.coverage","payload_json":"{\"subject\":\"激光原理\", ...}"}`。
+
+## 线性流程（他学他的，我生成我的）
+
+```text
+1. plan.coverage   把网课目录和书章节对上：必看 / 可跳 / 缺口，给出下一节
+2. split.pdf       他看课的时候我把大 PDF 切页、按章合并
+3. draft.new       给每一节建一条草稿：todo → drafting → needs-revision → ready
+4. draft.patch     他交截图后 supplement / revise / approve，状态与历史都留在 drafts.json
+```
+
+并发（多子 agent 同时写不同章）留到 v2，v1 先把队列和状态机跑稳。
 
 ## 目录约定
 
@@ -75,6 +106,7 @@ HANDOFF.md          方法论：口径、流程、工具链坑、验收清单
 - 抽取靠本机 Python（`pymupdf`、`python-pptx`），没有就自己装，插件不打包。
 - 编译靠本机 LaTeX（`xelatex`、`xdvipdfmx`）；模板是 `ctexart`，要有中文字体。
 - **退出码不可信**：本机实测会假报 127，判据只看 PDF 是否生成、日志里 `^!` 是否为 0。
+- 切页后**单个文件**会小很多（276 页的书最大单页约 1.9 MB），但单页 PDF 各自带一份字体，全部加起来和省不了太多；只为减小总量就用 `mode:chapters` 只合并章节。
 - 不生成内容：知识网络、逐项释义、解法归范由模型写，插件只做管道。
 - 不碰 StudyHub 的 `.dsh-study`。
 

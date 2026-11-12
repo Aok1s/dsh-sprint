@@ -14,6 +14,19 @@ description: 考前速成整理：把教材、PPT、网课截图变成能做题�
 4. 考试时间
 5. 只自用，还是要整理成能公开的
 
+## 多科目：一科一目录
+
+开工先 `subject.create {name:"科目名", exam:"考试日"}`，之后所有动作带 `subject` 就落到那一科（books/questions/ppt/shots/_work/_out 各自独立）。换科目不用切会话，同一会话里带不同 subject 即可。考完用 `subject.remove {name, mode:"work"}` 清中间件；要整科删就 `mode:"all", confirm:"科目名"`。
+
+## 线性推进：他学他的，我生成我的
+
+1. `plan.coverage {sections:[{title, book, minutes, verdict, why}]}` —— 把网课目录对到书章节，标必看/可跳/缺口，产出 plan.md 与下一节。
+2. 他去看课。我这边 `split.pdf` 把大书切单页、按章合并，再 `scan.pdf` 抽文字。
+3. `draft.new {title}` 给每节建草稿，状态 todo → drafting → needs-revision → ready → done。
+4. 他交网课截图：`scan.shots` 收图，`draft.patch {id, action:"supplement"|"revise"|"approve", note}` 记账，再回来改那一节。
+
+并发（多子 agent 同时写不同章）v2 再做，v1 只保证队列不丢、可断点续。
+
 ## 流程（S0–S6）
 - **S0 摸底**：project.init → scan.pdf（可按 --ranges 传章节页段）→ scan.ppt → scan.shots。记下 PDF 页与书页的偏移，写 outline.md。
 - **S1 知识网络**：一条主线 + 每环核心量与代表公式，做成表格。先写这个，再写细节。

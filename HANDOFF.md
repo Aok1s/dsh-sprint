@@ -250,6 +250,12 @@ G:\workplace\study-kit\HANDOFF.md
 | `render.preview` | 每页渲染 PNG，供人眼复核排版 |
 | `check.accept` | 交付自检：产物存在/非空/日志无错/页数达标 |
 | `template.install` | 复制第 7 节的模板 |
+| `subject.create` / `subject.list` / `subject.remove` | 多科目分区：一科一目录（books/questions/ppt/shots/_work/_out）；work 只清中间件，all 整科删除（要 confirm） |
+| `split.pdf` | 大电子书切单页 + 按章节合并（StudyHub 那套切页） |
+| `plan.coverage` / `plan.next` | 网课章节 → 书章节对照表（必看/可跳/缺口）与下一节 |
+| `draft.new` / list / update / patch | 每节草稿状态机：todo → drafting → needs-revision → ready → done；交截图后 supplement/revise/approve |
+
+**线性推进**：用户交书+题+网课目录 → plan.coverage 给推荐 → 他去看课 → 我这边 split.pdf 切页 + draft.* 推进 → 他交截图后 draft.patch 补改。并发（多子 agent 同时写不同章）留 v2。
 
 命令行的 `/sprint init|status|template|check` 是同一套东西的快捷键；技能 `exam-sprint` 会把这份文档的流程讲给模型听。
 
