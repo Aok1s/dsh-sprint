@@ -8,3 +8,5 @@ _work/
 tpl.png
 template.pdf
 _test*.mjs
+__pycache__/
+_probe*.mjs

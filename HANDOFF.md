@@ -260,3 +260,19 @@ G:\workplace\study-kit\HANDOFF.md
 命令行的 `/sprint init|status|template|check` 是同一套东西的快捷键；技能 `exam-sprint` 会把这份文档的流程讲给模型听。
 
 **规则**：内容（知识网络、逐项释义、解法归范）仍由模型写，插件只做管道与自检；**开发以本文档为 spec，文档改，工具跟着改**。
+
+---
+
+## 附：扫描件的文字与公式（v0.4 起）
+
+老教材常常是扫描件，PDF 自带的隐形文字层不可靠（实测「通信原理（第5版）」都能认成乱码，`S₂`→`Sz`、`0`→`O`）。做法：
+
+1. `page.ocr {}` 整本 OCR 一遍（220dpi 渲染 + RapidOCR，约 6 秒/页），每页落一个 `_work/ocr/pNNN.txt`。
+2. `page.search {query:"误码率"}` 全文找词，439 页约 90 毫秒。
+3. `page.read {page:176}` 读某页；`formulas:true` 再把独立公式行转 LaTeX（要装 texify，首次加载约两分钟）。
+
+三条硬经验：
+
+- **文字层只能当先验**。判断一页有没有"可用文字"，看 `scan.pdf` 报的 `emptyPages` 和随机抽两页肉眼比，别信 pdffonts。
+- **公式转换只在可信时给**：模型会编 `* [16] A. A. K.` 这种，用「去掉命令后的字母数字是否基本都在 OCR 原文里」筛（阈值 0.7），再丢掉宽度 < 90px 的碎片。行内公式和多行 cases 一律不转。
+- **Windows 管道编码**：python stdout 被 execFile 接走时退回 cp936，中文 JSON 到 node 侧全是乱码。插件里统一 `PYTHONIOENCODING=utf-8`，脚本里再 `sys.stdout.reconfigure`。这一条踩过两次。

@@ -60,6 +60,9 @@ sprint {"action":"check.accept","payload_json":"{\"tex\":\"_work/main.tex\",\"mi
 | `draft.claim` / release | 并发推进时先领租约（默认 1 小时） | id, owner, ttlSec |
 | `parallel.plan` | 列出还没做完的小节，谁能领 | — |
 | `template.install` | 复制排版模板 | name |
+| `page.ocr` | 扫描件整本 OCR 成逐页文本（约 6 秒/页，可只跑一段） | pdf, from, to, dpi |
+| `page.read` | 读某一页：有缓存用缓存，没有现场 OCR；`formulas:true` 同时出 LaTeX | page, pdf, formulas |
+| `page.search` | 全文检索（扫 `_work/ocr`，439 页约 90 毫秒） | query, limit |
 
 ## 多科目分区
 
@@ -121,7 +124,7 @@ questions.parse {"text":"教材 P161 5.6 5.7"}
 ```text
 <项目>/
 ├── 书.pdf / PPT/ / 截图/        原始资料
-├── _work/                       中间件（scan、render、out、shots、sprint.json）
+├── _work/                       中间件（scan、render、out、shots、ocr、sprint.json）
 └── 激光原理_1_精简教材.pdf        交付件，按序号放项目根
 ```
 
@@ -133,7 +136,7 @@ questions.parse {"text":"教材 P161 5.6 5.7"}
 index.js            工具与命令注册
 lib/sprint.js       动作分发、状态、渲染、自检
 lib/skills.js       注册 skills/exam-sprint
-lib/py/*.py         PDF/PPT 抽取、PDF 转图
+lib/py/*.py         PDF/PPT 抽取、PDF 转图、扫描件 OCR（pdfread.py / page_ocr.py）
 skills/exam-sprint  S0–S6 流程说明
 template.tex        排版模板（ctexart，色块标题/红字/蓝字/要点）
 HANDOFF.md          方法论：口径、流程、工具链坑、验收清单
@@ -145,6 +148,9 @@ HANDOFF.md          方法论：口径、流程、工具链坑、验收清单
 - 编译靠本机 LaTeX（`xelatex`、`xdvipdfmx`）；模板是 `ctexart`，要有中文字体。
 - **退出码不可信**：本机实测会假报 127，判据只看 PDF 是否生成、日志里 `^!` 是否为 0。
 - 切页后**单个文件**会小很多（276 页的书最大单页约 1.9 MB），但单页 PDF 各自带一份字体，全部加起来和省不了太多；只为减小总量就用 `mode:chapters` 只合并章节。
+- 扫描件识别靠 `rapidocr_onnxruntime`（离线，12 MB 自带模型）；公式走 `texify`（torch CPU + 约 1 GB 模型，首次加载两分钟）。两个都不打包，要用再装。
+- 行内公式（中文句子里夹着的）和多行 `cases` 公式转不了 LaTeX——那类只能读 OCR 文本、再看原图重建；独立成行的公式识别可靠（实测三条 3/3，还把文字层的 `S₂→Sz`、`0→O` 纠了回来）。
+- Windows 上 Python 的 stdout 被管道接走时会退回 cp936，中文 JSON 到 node 侧变乱码；插件已统一设 `PYTHONIOENCODING=utf-8`。
 - 不生成内容：知识网络、逐项释义、解法归范由模型写，插件只做管道。
 - 不碰 StudyHub 的 `.dsh-study`。
 
