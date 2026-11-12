@@ -51,6 +51,14 @@ sprint {"action":"check.accept","payload_json":"{\"tex\":\"_work/main.tex\",\"mi
 | `split.pdf` | 大 PDF 切单页 + 按 ranges 合并成章节 | path, ranges, mode |
 | `plan.coverage` / `plan.next` | 网课章节对照书章节，推荐下一节 | sections |
 | `draft.new` / list / update / patch | 每节草稿的状态机，交截图后打补丁 | title, status, action |
+| `subject.bootstrap` | 一次收资料：按扩展名把书/题/截图/PPT 归位，书自动抽一遍 | name, sourceDir |
+| `sprint.status` | 一屏看全：计划/草稿/题目/口头提示的进度 | — |
+| `book.set` | 记书本 PDF 与「PDF 页 = 书页 + offset」 | path, offset |
+| `questions.parse` | 把「教材 P161 5.6 5.7」拆成可勾选的条目 | text, dryRun |
+| `questions.import` / list / update | 登记成文件的题、勾状态 | path / items, id, status |
+| `hint.add` / list / remove | 老师口头提示，单独成篇 hints.md | text, tag |
+| `draft.claim` / release | 并发推进时先领租约（默认 1 小时） | id, owner, ttlSec |
+| `parallel.plan` | 列出还没做完的小节，谁能领 | — |
 | `template.install` | 复制排版模板 | name |
 
 ## 多科目分区
@@ -76,7 +84,37 @@ G:\workplace\
 4. draft.patch     他交截图后 supplement / revise / approve，状态与历史都留在 drafts.json
 ```
 
-并发（多子 agent 同时写不同章）留到 v2，v1 先把队列和状态机跑稳。
+## 并发推进（v2）
+
+单会话是队列；要让两个执行者同时写不同章，用租约：
+
+```text
+1. parallel.plan              列出没做完的小节、哪一节现在能领
+2. draft.claim  {id, owner}   领租约（默认 3600 秒），别人再 claim 会报错，force 可抢
+3. draft.update / patch       写这一节
+4. draft.release {id, owner}  还回去
+```
+
+租约只防「两个人同时写同一节」，不保证内容正确；内容仍然要 review 后 approve。
+
+## 老师口头提示与题目清单
+
+课上强调的一句话往往比整页 PPT 值钱，所以单独存、单独渲染：
+
+```text
+hint.add {"text":"P161 那两题解法要仔细推敲","tag":"重点"}   → 科目根目录 hints.md
+```
+
+有些作业不写在文件里，只是「教材 P161 的 5.6、5.7」这样一句话。questions.parse 把它拆成「哪一页、哪几题」，
+配 book.set 记下的页偏移，就能换算出 PDF 页，清单落在 questions.md：
+
+```text
+book.set        {"path":"通信原理.pdf","offset":15}
+questions.parse {"text":"教材 P161 5.6 5.7"}
+```
+
+题号写在页码下面几行也算；含汉字的行不会往下带页码（「附件作业 1-1 1-2」指的是另一个文件）。
+重复跑不会重复登记，已登记的题跳过。hint.add / questions.update 都是一句话动作，学习途中随口记。
 
 ## 目录约定
 
