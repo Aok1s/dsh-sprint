@@ -14,11 +14,11 @@
 ## 安装
 
 ```bash
-# 本地目录链接进 profile
-dsh plugin --profile desktop add link:G:\workplace\study-kit
+# 本地目录链接进 profile（注册名建议带作用域，与下文 bundles 一致）
+dsh plugin --profile desktop add '@local/dsh-sprint@link:G:\workplace\study-kit'
 ```
 
-或者把仓库放进 profile 的依赖，并在 `dsh.profile.bundles` 里加 `dsh-sprint`。
+或者把仓库放进 profile 的依赖，并在 `dsh.profile.bundles` 里加 `@local/dsh-sprint`。改完重启 DSH 生效。
 
 ## 快速开始
 
