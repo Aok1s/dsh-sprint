@@ -130,10 +130,32 @@ questions.parse {"text":"教材 P161 5.6 5.7"}
 
 `config.set {outDir, deliverDir}` 可改这两条线，默认如上面。
 
+## 界面（v0.5）
+
+两处，数据同源（都来自宿主 `/dsh-sprint/data`）：
+
+1. **对话里的挂件**：输入框左边多一个「速成」，点开是小抽屉——计划完成度、草稿/题目/提示条数、下一节待办、最近产物，
+   底部一个「打开完整页面」。它不存任何副本，所以永远和网页一致。
+2. **独立网页** `/dsh-sprint/ui`：左边是科目卡、进度、待办、老师提示、目录；右边是交付件清单与动作面板；
+   下面是管道任务概览。深色配色跟 DSH 主题走。
+
+网页上能直接跑的动作只有这些（可重跑、失败无害）：
+
+```text
+project.init    scan.pdf    scan.ppt    scan.shots
+render.tex      render.preview          check.accept
+```
+
+写内容、改状态那类动作（`draft.*`、`questions.*`、`plan.*`）不给网页直接调——内容由模型在对话里推进。
+接口只认本机回环请求；目录记忆存在 `~/.dsh-sprint/ui.json`，对话里跑过一次 `sprint` 之后网页就能直接接着用。
+
 ## 结构
 
 ```text
-index.js            工具与命令注册
+index.js            工具、命令与界面接线
+client.js           浏览器端：「速成」挂件 + 小抽屉（裸 ESM，不经构建）
+lib/ui.js           宿主端：/dsh-sprint/ui、/data、/action
+lib/ui/page.html    独立网页（自包含，无外链）
 lib/sprint.js       动作分发、状态、渲染、自检
 lib/skills.js       注册 skills/exam-sprint
 lib/py/*.py         PDF/PPT 抽取、PDF 转图、扫描件 OCR（pdfread.py / page_ocr.py）
@@ -152,6 +174,8 @@ HANDOFF.md          方法论：口径、流程、工具链坑、验收清单
 - 行内公式（中文句子里夹着的）和多行 `cases` 公式转不了 LaTeX——那类只能读 OCR 文本、再看原图重建；独立成行的公式识别可靠（实测三条 3/3，还把文字层的 `S₂→Sz`、`0→O` 纠了回来）。
 - Windows 上 Python 的 stdout 被管道接走时会退回 cp936，中文 JSON 到 node 侧变乱码；插件已统一设 `PYTHONIOENCODING=utf-8`。
 - 不生成内容：知识网络、逐项释义、解法归范由模型写，插件只做管道。
+- 网页不做长任务后台化：`scan.pdf` 这种几秒到几十秒的动作是同步等的，页面会显示「运行中」；真跑大书就用对话里的工具。
+- 界面只在有 `webServer` 的部署里出现（桌面版都有）；无头环境插件照常提供工具与命令。
 - 不碰 StudyHub 的 `.dsh-study`。
 
 ## English

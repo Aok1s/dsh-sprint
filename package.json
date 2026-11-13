@@ -1,6 +1,6 @@
 {
   "name": "dsh-sprint",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "考前速成整理流程的 DSH 插件：资料抽取、任务编排、模板渲染与验收自检",
   "license": "MIT",
   "type": "module",
@@ -15,6 +15,7 @@
   ],
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./locale/*.json": "./locale/*.json",
     "./template.tex": "./template.tex",
@@ -22,6 +23,7 @@
   },
   "files": [
     "index.js",
+    "client.js",
     "lib",
     "locale",
     "template.tex",
@@ -34,6 +36,14 @@
     "manifestVersion": 1,
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
     }
   },
   "dependencies": {

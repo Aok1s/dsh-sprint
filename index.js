@@ -10,6 +10,7 @@
 import Schema from 'schemastery';
 import { ACTIONS, runSprint, sessionRoot } from './lib/sprint.js';
 import { registerSkills } from './lib/skills.js';
+import { registerUi, noteDir } from './lib/ui.js';
 
 let defineTool = (d) => d;
 try { ({ defineTool } = await import('@deepseek-ai/dsh-tools')); }
@@ -53,6 +54,8 @@ export function apply(ctx, rawConfig = {}) {
         catch (e) { throw new Error('payload_json 不是合法 JSON：' + e.message); }
       }
       if (a.dir) args.dir = a.dir;
+      // 记下这次落在哪个项目：网页与挂件下次打开直接接着用，不用再手填路径。
+      try { noteDir(a.dir || exec?.agent?.session?.header?.cwd); } catch { /* 记不住不影响执行 */ }
       const value = await runSprint(a.action, args, exec, config);
       return JSON.parse(JSON.stringify(value && typeof value === 'object' && !Array.isArray(value) ? value : { result: value }));
     },
@@ -93,6 +96,9 @@ export function apply(ctx, rawConfig = {}) {
       }
     },
   }));
+
+  // 界面：自带网页 /dsh-sprint/ui + 两个 JSON 接口；无头部署没有 webServer 就整体跳过。
+  registerUi(ctx, config);
 
   // 技能：告诉模型这套流程怎么走（宿主没有技能注册表就跳过）
   ctx.inject(['skills'], (s) => registerSkills(s));
