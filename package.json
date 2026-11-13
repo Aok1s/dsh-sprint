@@ -1,6 +1,6 @@
 {
   "name": "dsh-sprint",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "考前速成整理流程的 DSH 插件：资料抽取、任务编排、模板渲染与验收自检",
   "license": "MIT",
   "type": "module",
